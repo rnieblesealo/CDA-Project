@@ -62,6 +62,15 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
 
 int instruction_fetch(unsigned PC,unsigned *Mem,unsigned *instruction)
 {
+	// case to check if word aligned (mult of 4)
+	if (PC % 4 != 0) {
+		// flag for halt
+		return 1;
+	}
+
+	// fetch instruction
+	*instruction = Mem[PC >> 2];
+	return 0;
 
 }
 
