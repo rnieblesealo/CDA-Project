@@ -1,9 +1,64 @@
 #include "spimcore.h"
 
-void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
+void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero) 
 {
+    unsigned Z;
 
+    //ADD
+    if (ALUControl == 0) {
+       Z=A+B;
+       //printf("add");
+    }
+    
+    //SUB
+    else if (ALUControl == 1) {
+       Z=A-B;
+       //printf("sub");
+    }
+     
+    //SLT *set A and B to int to account of signs*
+    else if (ALUControl == 2) {
+        if ((int)A<(int)B)
+          Z = 1;
+        else
+          Z = 0;
+    }
+     
+    //SLTU 
+    else if (ALUControl == 3) {
+        if (A<B)
+          Z = 1;
+        else
+          Z = 0;
+    }
+    
+    //AND
+    else if (ALUControl == 4)
+        Z = A&B;
+
+    //OR
+    else if (ALUControl == 5)
+        Z = A|B;
+
+    //SLL
+    else if (ALUControl == 6)
+        Z = B << 16;
+    
+    //NOT
+    else if (ALUControl == 7)
+        Z = ~A;
+    
+    // set ALUresult to the output of operations (Z)
+    *ALUresult = Z;
+    
+    // set Zero to 0 or 1 depending on value of ALUresult
+    if (*ALUresult == 0)
+        *Zero = 1;
+
+    else
+        *Zero = 0;
 }
+
 
 int instruction_fetch(unsigned PC,unsigned *Mem,unsigned *instruction)
 {
