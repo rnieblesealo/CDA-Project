@@ -68,16 +68,10 @@ int mask(int word, int start, int end){
 }
 
 void instruction_partition(unsigned instruction){
-	printf("Instruction:\n"); print_binary(instruction, 32);
-	
-	printf("opcode:\n"); print_binary(mask(instruction, 26, 31), 6);
-	printf("rs:\n"); print_binary(mask(instruction, 21, 25), 5);
-	printf("rt:\n"); print_binary(mask(instruction, 16, 20), 5);
-	printf("rd:\n");print_binary(mask(instruction, 11, 15), 5);
+
 }
 
 int main(){
-	instruction_partition(36847648);
 
 	return 0;
 }
