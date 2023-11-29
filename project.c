@@ -72,108 +72,106 @@ void instruction_partition(unsigned instruction, unsigned *op, unsigned *r1,unsi
 	*jsec = subset(instruction, 0, 25);
 }
 
-int instruction_decode(unsigned op,struct_controls *controls)
-{
-	// Initialize all control signals to 0
-	controls->ALUOp = 0;
-	controls->ALUSrc = 0;
-	controls->Branch = 0;
-	controls->Jump = 0;
-	controls->MemRead = 0;
-	controls->MemtoReg = 0;
-	controls->MemWrite = 0;
-	controls->RegDst = 0;
-	controls->RegWrite = 0;
+int instruction_decode(unsigned op,struct_controls *controls){
+    // initialize all control signals to 0
+    controls->ALUOp = 0;
+    controls->ALUSrc = 0;
+    controls->Branch = 0;
+    controls->Jump = 0;
+    controls->MemRead = 0;
+    controls->MemtoReg = 0;
+    controls->MemWrite = 0;
+    controls->RegDst = 0;
+    controls->RegWrite = 0;
 
-	switch(op) {
-		// 0000 0000 r-types (add, sub, &, or, slt, sltu)
-		case 0: 
-			controls->RegDst = 1;
-			controls->RegWrite = 1;
+    switch(op) {
+        // 0000 0000 r-types (add, sub, &, or, slt, sltu)
+        case 0:
+          controls->RegDst = 1;
+          controls->RegWrite = 1;
 
-			// for all r-types
-			controls->ALUOp = 7;
-			break;
+          // for all r-types
+          controls->ALUOp = 7;
+          break;
 
-			// 0010 0011 lw
-		case 35:
-			controls->ALUSrc = 1;
-			controls-> MemtoReg = 1;
-			controls->RegWrite = 1;
-			controls->MemRead = 1;
-			break;
+        // 0010 0011 lw
+        case 35:
+          controls->ALUSrc = 1;
+          controls-> MemtoReg = 1;
+          controls->RegWrite = 1;
+          controls->MemRead = 1;
+          break;
 
-			// 0010 1011 sw
-		case 43:
-			controls->RegDst = 2;
-			controls->ALUSrc = 1;
-			controls->MemtoReg = 2;
-			controls->MemWrite = 1;
-			break;
+        // 0010 1011 sw
+        case 43:
+          controls->RegDst = 2;
+          controls->ALUSrc = 1;
+          controls->MemtoReg = 2;
+          controls->MemWrite = 1;
+          break;
 
-			// 0000 1000 addi
-		case 8:
-			controls->ALUSrc = 1;
-			controls->RegWrite = 1;
+        // 0000 1000 addi
+        case 8:
+          controls->ALUSrc = 1;
+          controls->RegWrite = 1;
 
-			// add ALUopcode
-			controls->ALUOp = 0;
-			break;
+          // add ALUopcode
+          controls->ALUOp = 0;
+          break;
 
-			// 0000 1111 lui
-		case 15:
-			controls->ALUOp = 6;
-			controls->RegWrite = 1;
-			controls->ALUSrc = 1;
+        // 0000 1111 lui
+        case 15:
+          controls->ALUOp = 6;
+          controls->RegWrite = 1;
+          controls->ALUSrc = 1;
 
-			// 0000 0100 beq
-		case 4:
-			controls->RegDst = 2;
-			controls->MemtoReg = 2;
-			controls->Branch = 1;
+        // 0000 0100 beq
+        case 4:
+          controls->RegDst = 2;
+          controls->MemtoReg = 2;
+          controls->Branch = 1;
 
-			// sub ALUopcode
-			controls->ALUOp = 1;
-			break;
+          // sub ALUopcode
+          controls->ALUOp = 1;
+          break;
 
-			//0000 1010 slti
-		case 10:
-			controls->RegWrite = 1;
-			controls->ALUSrc = 1;
+        //0000 1010 slti
+        case 10:
+          controls->RegWrite = 1;
+          controls->ALUSrc = 1;
 
-			// slt ALUopcode
-			controls->ALUOp = 2;
-			break;
+          // slt ALUopcode
+          controls->ALUOp = 2;
+          break;
 
-			// 0000 1011 sltiu
-		case 11:
-			controls->RegWrite = 1;
-			controls->ALUSrc = 1;
+        // 0000 1011 sltiu
+        case 11:
+          controls->RegWrite = 1;
+          controls->ALUSrc = 1;
 
-			// sltu ALUopcode
-			controls->ALUOp = 3;
-			break;
+          // sltu ALUopcode
+          controls->ALUOp = 3;
+          break;
 
-			// 0000 0010 j
-		case 2:
-			controls->Jump = 1;
-			controls->Branch = 2;
-			controls->MemtoReg = 2;
-			controls->ALUSrc = 2;
-			controls->RegDst = 2; 
+        // 0000 0010 j
+        case 2:
+          controls->Jump = 1;
+          controls->Branch = 2;
+          controls->MemtoReg = 2;
+          controls->ALUSrc = 2;
+          controls->RegDst = 2;
 
-			// slt ALUopcode
-			controls->ALUOp = 2;
-			break;
+          // slt ALUopcode
+          controls->ALUOp = 2;
+          break;
 
-		default:
-			// case to assert halt
-			return 1;
-	}
+        default:
+          // case to assert halt
+          return 1;
+    }
 
-	// else return 0 and deassert Halt
-	return 0;
-
+    // else return 0 and deassert Halt
+    return 0;
 }
 
 void read_register(unsigned r1,unsigned r2,unsigned *Reg,unsigned *data1,unsigned *data2){
@@ -183,7 +181,14 @@ void read_register(unsigned r1,unsigned r2,unsigned *Reg,unsigned *data1,unsigne
 }
 
 void sign_extend(unsigned offset,unsigned *extended_value){
-
+    //Assign the sign-extended value of offset to extended_value.
+    int bitmask = ((1 << 16) - 1) << 16;
+    
+    *extended_value = offset;
+    
+    if (offset & (1 << 15)) {
+        *extended_value |= bitmask;
+    }
 }
 
 int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigned funct,char ALUOp,char ALUSrc,unsigned *ALUresult,char *Zero){
@@ -250,10 +255,17 @@ void write_register(unsigned r2, unsigned r3, unsigned memdata, unsigned ALUresu
 }
 
 void PC_update(unsigned jsec,unsigned extended_value,char Branch,char Jump,char Zero,unsigned *PC){
+    //Update the program counter (PC).
+    *PC += 4;
+   
+    if (Jump == 1){
+         *PC = (jsec << 2) | (PC* & (15 << 28));
+    }
 
+    else if (Branch == 1 && Zero == 0) {
+        *PC = (extended_value << 2) + *PC;
+    }
 }
-
-// Utility functions, not part of project
 
 int is_word_aligned(unsigned n){
 	// A word is aligned if it's a multiple of 4
@@ -261,8 +273,8 @@ int is_word_aligned(unsigned n){
 }
 
 unsigned subset(unsigned value, int start, int end){
-	// Returns the subset of bits in words in (start, end) inclusively
-	if (start > end){
+	// If endpoints overlap do not allow execution
+  if (start > end){
 		printf("Subset returning 0; start greater than end!");
 		return 0;
 	}
@@ -274,13 +286,10 @@ unsigned subset(unsigned value, int start, int end){
 	mask <<= ((end - start) + 1);
 	mask -= 1;
 
-	// Shift mask to start spot 
-	mask <<= start;
-
-	// Apply mask to word
+	// Apply mask to value
 	value &= mask;
 
-	// Shift to beginning
+  // Shift value to right
 	value >>= start;
 
 	return value;
