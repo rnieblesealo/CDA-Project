@@ -74,6 +74,8 @@ int instruction_fetch(unsigned PC,unsigned *Mem,unsigned *instruction)
 
 }
 
+int subset(int word, int start, int end);
+
 void instruction_partition(unsigned instruction, unsigned *op, unsigned *r1,unsigned *r2, unsigned *r3, unsigned *funct, unsigned *offset, unsigned *jsec)
 {
     // Extract the subset of bits from the instruction pertaining to the different components and store them
@@ -138,6 +140,9 @@ int instruction_decode(unsigned op,struct_controls *controls)
 
         // 0000 1111 lui
         case 15:
+          controls->ALUOp = 6;
+          controls->RegWrite = 1;
+          controls->ALUSrc = 1;
 
         // 0000 0100 beq
         case 4:
@@ -191,7 +196,8 @@ int instruction_decode(unsigned op,struct_controls *controls)
 
 void read_register(unsigned r1,unsigned r2,unsigned *Reg,unsigned *data1,unsigned *data2)
 {
-
+  *data1 = Reg[r1];
+  *data2 = Reg[r2];
 }
 
 
