@@ -206,8 +206,9 @@ void sign_extend(unsigned offset,unsigned *extended_value)
     //Assign the sign-extended value of offset to extended_value.
     int bitmask = ((1 << 16) - 1) << 16;
     *extended_value = offset;
-    if (offset & (1 << 15))
+    if (offset & (1 << 15)) {
         *extended_value |= bitmask;
+    }
 }
 
 int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigned funct,char ALUOp,char ALUSrc,unsigned *ALUresult,char *Zero)
@@ -227,7 +228,15 @@ void write_register(unsigned r2,unsigned r3,unsigned memdata,unsigned ALUresult,
 
 void PC_update(unsigned jsec,unsigned extended_value,char Branch,char Jump,char Zero,unsigned *PC)
 {
+    //Update the program counter (PC).
+    *PC += 4;
+    if(Jump == 1){
+         *PC = (jsec << 2) | (PC* & (15 << 28));
+    }
 
+    else if (Branch == 1 && Zero == 0) {
+        *PC = (extended_value << 2) + *PC;
+    }
 }
 
 int subset(int word, int start, int end){
