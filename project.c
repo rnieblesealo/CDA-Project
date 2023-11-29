@@ -1,6 +1,6 @@
 #include "spimcore.h"
 
-void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero) 
+void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
 {
     unsigned Z;
 
@@ -9,13 +9,13 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
        Z=A+B;
        //printf("add");
     }
-    
+
     //SUB
     else if (ALUControl == 1) {
        Z=A-B;
        //printf("sub");
     }
-     
+
     //SLT *set A and B to int to account of signs*
     else if (ALUControl == 2) {
         if ((int)A<(int)B)
@@ -23,15 +23,15 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
         else
           Z = 0;
     }
-     
-    //SLTU 
+
+    //SLTU
     else if (ALUControl == 3) {
         if (A<B)
           Z = 1;
         else
           Z = 0;
     }
-    
+
     //AND
     else if (ALUControl == 4)
         Z = A&B;
@@ -43,14 +43,14 @@ void ALU(unsigned A,unsigned B,char ALUControl,unsigned *ALUresult,char *Zero)
     //SLL
     else if (ALUControl == 6)
         Z = B << 16;
-    
+
     //NOT
     else if (ALUControl == 7)
         Z = ~A;
-    
+
     // set ALUresult to the output of operations (Z)
     *ALUresult = Z;
-    
+
     // set Zero to 0 or 1 depending on value of ALUresult
     if (*ALUresult == 0)
         *Zero = 1;
@@ -79,7 +79,7 @@ int subset(int word, int start, int end);
 void instruction_partition(unsigned instruction, unsigned *op, unsigned *r1,unsigned *r2, unsigned *r3, unsigned *funct, unsigned *offset, unsigned *jsec)
 {
     // Extract the subset of bits from the instruction pertaining to the different components and store them
-	
+
 	*op = subset(instruction, 26, 31);
 	*r1 = subset(instruction, 21, 25);
 	*r2 = subset(instruction, 16, 20);
@@ -105,14 +105,14 @@ int instruction_decode(unsigned op,struct_controls *controls)
 
     switch(op) {
         // 0000 0000 r-types (add, sub, &, or, slt, sltu)
-        case 0: 
+        case 0:
           controls->RegDst = 1;
           controls->RegWrite = 1;
-          
+
           // for all r-types
           controls->ALUOp = 7;
           break;
-        
+
         // 0010 0011 lw
         case 35:
           controls->ALUSrc = 1;
@@ -133,7 +133,7 @@ int instruction_decode(unsigned op,struct_controls *controls)
         case 8:
           controls->ALUSrc = 1;
           controls->RegWrite = 1;
-          
+
           // add ALUopcode
           controls->ALUOp = 0;
           break;
@@ -149,7 +149,7 @@ int instruction_decode(unsigned op,struct_controls *controls)
           controls->RegDst = 2;
           controls->MemtoReg = 2;
           controls->Branch = 1;
-          
+
           // sub ALUopcode
           controls->ALUOp = 1;
           break;
@@ -158,7 +158,7 @@ int instruction_decode(unsigned op,struct_controls *controls)
         case 10:
           controls->RegWrite = 1;
           controls->ALUSrc = 1;
-          
+
           // slt ALUopcode
           controls->ALUOp = 2;
           break;
@@ -167,7 +167,7 @@ int instruction_decode(unsigned op,struct_controls *controls)
         case 11:
           controls->RegWrite = 1;
           controls->ALUSrc = 1;
-          
+
           // sltu ALUopcode
           controls->ALUOp = 3;
           break;
@@ -178,7 +178,7 @@ int instruction_decode(unsigned op,struct_controls *controls)
           controls->Branch = 2;
           controls->MemtoReg = 2;
           controls->ALUSrc = 2;
-          controls->RegDst = 2; 
+          controls->RegDst = 2;
 
           // slt ALUopcode
           controls->ALUOp = 2;
@@ -203,7 +203,11 @@ void read_register(unsigned r1,unsigned r2,unsigned *Reg,unsigned *data1,unsigne
 
 void sign_extend(unsigned offset,unsigned *extended_value)
 {
-
+    //Assign the sign-extended value of offset to extended_value.
+    int bitmask = ((1 << 16) - 1) << 16;
+    *extended_value = offset;
+    if (offset & (1 << 15))
+        *extended_value |= bitmask;
 }
 
 int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigned funct,char ALUOp,char ALUSrc,unsigned *ALUresult,char *Zero)
@@ -228,7 +232,7 @@ void PC_update(unsigned jsec,unsigned extended_value,char Branch,char Jump,char 
 
 int subset(int word, int start, int end){
 	// Returns the subset of bits in words in (start, end) inclusively
-    
+
     if (start > end){
 		printf("Subset returning 0; start greater than end!");
 		return 0;
@@ -241,7 +245,7 @@ int subset(int word, int start, int end){
 	mask <<= ((end - start) + 1);
 	mask -= 1;
 
-	// Shift mask to start spot 
+	// Shift mask to start spot
 	mask <<= start;
 
 	// printf("Original word: ");
@@ -258,7 +262,7 @@ int subset(int word, int start, int end){
 
 	// Shift to beginning
 	word >>= start;
-	
+
 	// printf("Shifted word: ");
 	// print_binary(word, 32);
 
