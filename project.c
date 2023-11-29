@@ -192,7 +192,69 @@ void sign_extend(unsigned offset,unsigned *extended_value){
 }
 
 int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigned funct,char ALUOp,char ALUSrc,unsigned *ALUresult,char *Zero){
+  // HALT if instruction invalid
+  if (ALUOp>7 || ALUOp<0)
+    return 1;
+  
+  if (ALUSrc == 1)
+    data2 = extended_value;
 
+  unsigned ALUControl = ALUOp;
+  
+  // r-type operations using decoded funct value
+  if (ALUOp == 7) {
+    switch(funct) {
+      // add 
+      case 32:
+        ALUControl = 0;
+        break;
+      
+      // sub
+      case 34:
+        ALUControl = 1;
+        break;
+      
+      // SLT
+      case 42:
+        ALUControl = 2;
+        break;
+      
+      // SLTU
+      case 43:
+        ALUControl = 3;
+        break;
+      
+      // and
+      case 36:
+        ALUControl = 4;
+        break;
+      
+      // or
+      case 37:
+        ALUControl = 5;
+        break;
+      
+      // sll
+      case 6:
+        ALUControl = 6;
+        break;
+      
+      // not
+      case 39:
+        ALUControl = 7;
+        break;
+
+      default:
+        return 1;
+
+    }
+  }
+  
+  // run ALU function after getting proper ALUControl value
+  ALU(data1, data2, ALUControl, ALUresult, Zero);
+
+  // no issues, don't assert HALT
+  return 0;
 }
 
 int rw_memory(unsigned ALUresult, unsigned data2, char MemWrite, char MemRead, unsigned *memdata, unsigned *Mem){
@@ -222,7 +284,7 @@ int rw_memory(unsigned ALUresult, unsigned data2, char MemWrite, char MemRead, u
 		// Otherwise, write value into memdata
 		*memdata = read_value;
 	}
-
+  
 	else if (MemWrite == 1){
 		// If data is not word aligned, halt
 		if (!is_word_aligned(data2))
