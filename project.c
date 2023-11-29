@@ -325,7 +325,7 @@ void PC_update(unsigned jsec,unsigned extended_value,char Branch,char Jump,char 
 	*PC += 4;
 
 	if (Jump == 1){
-        *PC = (jsec << 2) | (*PC & (15 << 28));
+     	   *PC = (jsec << 2) | (*PC & (15 << 28));
 	}
 
 	else if (Branch == 1 && Zero == 0) {
