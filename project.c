@@ -38,14 +38,14 @@ void ALU(unsigned A, unsigned B, char ALUControl,unsigned *ALUresult,char *Zero)
 		// SLL
 		case 6:
 			Z = B << 16;
-			break;			
+			break;
 		// NOT
 		case 7:
 			Z = ~A;
 	}
 
 	// Set ALUresult to computed value; set zero to 0 or 1 depending on value of ALUresult
-	*Zero = (*ALUresult = Z) == 0 ? 1 : 0;	
+	*Zero = (*ALUresult = Z) == 0 ? 1 : 0;
 }
 
 int instruction_fetch(unsigned PC, unsigned *Mem, unsigned *instruction){
@@ -204,7 +204,7 @@ int ALU_operations(unsigned data1,unsigned data2,unsigned extended_value,unsigne
 	// r-type operations using decoded funct value
 	if (ALUOp == 7) {
 		switch(funct) {
-			// add 
+			// add
 			case 32:
 				ALUControl = 0;
 				break;
@@ -320,18 +320,12 @@ void write_register(unsigned r2, unsigned r3, unsigned memdata, unsigned ALUresu
 
 void PC_update(unsigned jsec,unsigned extended_value,char Branch,char Jump,char Zero,unsigned *PC){
 	// TODO This function may not work correctly, see comment below:
-	
+
 	//Update the program counter (PC).
 	*PC += 4;
 
 	if (Jump == 1){
-		// The orginal line: PC = (jsec << 2) | (PC* & (15 << 28));
-		
-		// You cannot take the address of an int, 15 << 28 is an int
-		
-		// Did you mean: *PC = (jsec << 2) | (*PC & (15 << 28));
-		// In this version, you're ANDing the value pointed to by PC by 15 << 28
-		// If so, just uncomment it! :)
+        *PC = (jsec << 2) | (*PC & (15 << 28));
 	}
 
 	else if (Branch == 1 && Zero == 0) {
