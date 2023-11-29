@@ -1,6 +1,6 @@
 #include "spimcore.h"
 
-// Utility functions, not part of project
+// Utility function prototypes (not graded)
 int is_word_aligned(unsigned n);
 unsigned subset(unsigned word, int start, int end);
 
@@ -332,6 +332,8 @@ void PC_update(unsigned jsec,unsigned extended_value,char Branch,char Jump,char 
 		*PC = (extended_value << 2) + *PC;
 	}
 }
+
+// Utility functions (not graded):
 
 int is_word_aligned(unsigned n){
 	// A word is aligned if it's a multiple of 4
