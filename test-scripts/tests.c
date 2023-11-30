@@ -58,8 +58,7 @@ int mask(int word, int start, int end){
 	// printf("Masked word: ");
 	// print_binary(word, 32);
 
-	// Shift to beginning
-	word >>= start;
+
 	
 	// printf("Shifted word: ");
 	// print_binary(word, 32);
